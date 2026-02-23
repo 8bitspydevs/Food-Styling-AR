@@ -1,0 +1,368 @@
+:root {
+    --bg-dark: #09090b;
+    --bg-darker: #000000;
+    --accent-primary: #ff5252;
+    /* Un rojo/naranja vibrante para comida */
+    --accent-secondary: #ff8a65;
+
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    overflow: hidden;
+    /* Prevenir scroll en el body, la app se siente nativa */
+    position: relative;
+}
+
+/* Efectos de fondo vibrantes */
+.background-decor {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    transition: background 1s ease-in-out;
+}
+
+.blur-circle-1 {
+    width: 40vw;
+    height: 40vw;
+    background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
+    top: -10vw;
+    left: -10vw;
+}
+
+.blur-circle-2 {
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, #4f46e5 0%, transparent 70%);
+    bottom: -10vw;
+    right: -20vw;
+    opacity: 0.3;
+}
+
+/* Componentes Glassmorphism */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+}
+
+/* Header */
+.app-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5rem;
+    z-index: 10;
+    text-align: center;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.brand-title {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.accent-text {
+    color: var(--accent-primary);
+}
+
+.brand-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Visor 3D Principal */
+.viewer-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 5;
+}
+
+model-viewer {
+    width: 100%;
+    height: 100%;
+    outline: none;
+    --poster-color: transparent;
+    background-color: var(--bg-dark);
+    z-index: 10;
+}
+
+/* Botón AR Premium */
+.btn-ar-primary {
+    position: absolute;
+    bottom: 30%;
+    /* Arriba del carrusel */
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--accent-primary) 0%, #ff1744 100%);
+    color: white;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px 28px;
+    border-radius: 100px;
+    border: none;
+    box-shadow: 0 10px 25px -5px rgba(255, 82, 82, 0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 20;
+}
+
+.btn-ar-primary:hover,
+.btn-ar-primary:active {
+    transform: translateX(-50%) translateY(-3px);
+    box-shadow: 0 15px 35px -5px rgba(255, 82, 82, 0.6);
+}
+
+/* Prompts de AR y Loader */
+#ar-prompt {
+    position: absolute;
+    left: 50%;
+    bottom: 175px;
+    animation: nudge 2.5s infinite running;
+    animation-play-state: running;
+    transform: translateX(-50%);
+    display: none;
+}
+
+#ar-prompt>img {
+    animation: pulse 2.5s infinite running;
+    animation-play-state: running;
+    width: 40px;
+}
+
+@keyframes nudge {
+
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(10px);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(0.9);
+    }
+}
+
+#loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px 30px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#loader.active {
+    opacity: 1;
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--accent-primary);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Fallback QR Code Desktop/Insecure */
+#qr-fallback {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    max-width: 180px;
+    text-align: center;
+    z-index: 20;
+}
+
+#qr-fallback h3 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+#qr-fallback p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+
+#qr-fallback img {
+    border-radius: 8px;
+    background: white;
+    padding: 5px;
+    width: 120px;
+    height: 120px;
+}
+
+/* Controles de Catálogo (Carrusel Footer) */
+.controls-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5rem 0 2rem 0;
+    z-index: 10;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 32px 32px 0 0;
+}
+
+.section-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.carousel-container {
+    width: 100%;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    /* Suavidad en iOS */
+    scrollbar-width: none;
+    /* Ocultar scrollbar Firefox */
+}
+
+.carousel-container::-webkit-scrollbar {
+    display: none;
+    /* Ocultar scrollbar Chrome/Safari */
+}
+
+.models-carousel {
+    display: flex;
+    gap: 1rem;
+    padding: 0 1.5rem;
+    min-width: max-content;
+}
+
+/* Tarjetas de Modelo */
+.model-card {
+    position: relative;
+    width: 100px;
+    height: 120px;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.model-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+    transition: opacity 0.3s ease, transform 0.5s ease;
+}
+
+.model-card .model-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 8px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+/* Estado activo/hover */
+.model-card:hover img,
+.model-card.active img {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.model-card:hover .model-name,
+.model-card.active .model-name {
+    transform: translateY(0);
+}
+
+.model-card.active {
+    border-color: var(--accent-primary);
+    box-shadow: 0 8px 24px rgba(255, 82, 82, 0.3);
+    transform: translateY(-5px);
+}

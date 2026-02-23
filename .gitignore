@@ -1,0 +1,13 @@
+node_modules/
+.DS_Store
+dist/
+.env
+*.log
+.vscode/
+.idea/
+.gemini/
+.agents/
+.agent/
+_agents/
+_agent/
+brain/
