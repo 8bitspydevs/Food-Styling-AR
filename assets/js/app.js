@@ -1,53 +1,96 @@
 const modelsData = [
     {
         id: 'burger',
-        name: 'Hamburguesa',
+        name: 'Aguacate',
+        category: 'test',
         src: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb',
-        iosSrc: '',
-        thumbnail: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&auto=format&fit=crop',
-        accentColor: '#4caf50'
+        accentColor: '#147E72'
     },
     {
         id: 'cake',
-        name: 'Pastel',
+        name: 'Zorro',
+        category: 'test',
         src: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/glTF-Binary/Fox.glb',
-        iosSrc: '',
-        thumbnail: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=300&auto=format&fit=crop',
-        accentColor: '#e91e63'
+        accentColor: '#E79D19'
     },
     {
         id: 'coffee',
         name: 'Sillón',
+        category: 'test',
         src: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/SheenChair/glTF-Binary/SheenChair.glb',
-        iosSrc: '',
-        thumbnail: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=300&auto=format&fit=crop',
-        accentColor: '#795548'
+        accentColor: '#147E72'
     },
     {
         id: 'donut',
-        name: 'Teléfono',
+        name: 'Cámara',
+        category: 'test',
         src: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb',
-        iosSrc: '',
-        thumbnail: 'https://images.unsplash.com/photo-1551025073-61b470bdc5fc?q=80&w=300&auto=format&fit=crop',
-        accentColor: '#9c27b0'
+        accentColor: '#E79D19'
     }
 ];
 
+const categories = [
+    { id: 'test', name: 'Test' },
+    { id: 'comidas', name: 'Comidas' },
+    { id: 'bebidas', name: 'Bebidas' }
+];
+
+let currentCategory = 'test';
+let isExpanded = false;
+
 document.addEventListener('DOMContentLoaded', () => {
     const carousel = document.getElementById('models-carousel');
+    const categoryNav = document.getElementById('category-nav');
     const modelViewer = document.getElementById('main-viewer');
     const loader = document.getElementById('loader');
     const bgCircle = document.getElementById('bg-circle-1');
+    const btnExpand = document.getElementById('btn-expand-catalogue');
+    const controlsContainer = document.querySelector('.controls-container');
+
+    // Inicializar Categorías
+    function renderCategories() {
+        categoryNav.innerHTML = '';
+        categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = `category-tab ${currentCategory === cat.id ? 'active' : ''}`;
+            btn.textContent = cat.name;
+            btn.addEventListener('click', () => {
+                currentCategory = cat.id;
+                renderCategories();
+                renderCarousel();
+            });
+            categoryNav.appendChild(btn);
+        });
+    }
 
     // Inicializar catálogo
     function renderCarousel() {
-        modelsData.forEach((model, index) => {
+        carousel.innerHTML = '';
+        const filteredModels = modelsData.filter(m => m.category === currentCategory);
+
+        if (filteredModels.length === 0) {
+            carousel.innerHTML = `<p class="empty-msg">Próximamente...</p>`;
+            return;
+        }
+
+        filteredModels.forEach((model, index) => {
             const card = document.createElement('div');
             card.className = `model-card ${index === 0 ? 'active' : ''}`;
             card.dataset.id = model.id;
 
             card.innerHTML = `
-                <img src="${model.thumbnail}" alt="${model.name}">
+                <div class="model-preview-container">
+                    <model-viewer 
+                        src="${model.src}" 
+                        loading="lazy" 
+                        reveal="auto" 
+                        auto-rotate 
+                        rotation-per-second="30deg"
+                        shadow-intensity="1"
+                        environment-image="neutral"
+                        alt="${model.name}">
+                    </model-viewer>
+                </div>
                 <div class="model-name">${model.name}</div>
             `;
 
@@ -70,12 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cambiar modelo en el viewer
         modelViewer.src = model.src;
-        if (model.iosSrc) {
-            modelViewer.iosSrc = model.iosSrc;
-        } else {
-            modelViewer.removeAttribute('ios-src');
-        }
         modelViewer.alt = `Modelo 3D de ${model.name}`;
+    }
+
+    // Toggle Expansion
+    if (btnExpand) {
+        btnExpand.addEventListener('click', () => {
+            isExpanded = !isExpanded;
+            controlsContainer.classList.toggle('expanded', isExpanded);
+            btnExpand.textContent = isExpanded ? 'Contraer' : 'Expandir';
+        });
     }
 
     // Escuchar eventos de carga del model-viewer
@@ -86,10 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
     modelViewer.addEventListener('error', (error) => {
         loader.classList.remove('active');
         console.error('Error al cargar el modelo 3D', error);
-        // Opcional: Mostrar un toast o mensaje al usuario
     });
 
     // Iniciar
+    renderCategories();
     renderCarousel();
 
     // Configurar AR prompt (Nativo)
@@ -106,15 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!modelViewer.canActivateAR) {
             const qrFallback = document.getElementById('qr-fallback');
             if (qrFallback) {
-                // Generar QR apuntando al túnel seguro o IP local
                 let targetUrl = window.location.href;
-
-                // Si estamos en localhost, tratamos de usar la IP local para que sea accesible desde el móvil
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    // Nota: 192.168.100.106 es tu IP local detectada
                     targetUrl = 'http://192.168.100.106:5173';
                 }
-
                 document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(targetUrl)}`;
                 qrFallback.style.display = 'flex';
             }

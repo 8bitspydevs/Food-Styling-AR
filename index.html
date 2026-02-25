@@ -66,16 +66,25 @@
             </div>
         </model-viewer>
 
-        <!-- Fallback de código QR si AR no está disponible o el usuario está en Desktop -->
-        <div id="qr-fallback" class="glass-panel" style="display: none;">
-            <h3>Escanea para AR</h3>
-            <p>Abre esta página en tu celular para usar la cámara.</p>
-            <img id="qr-code-img" src="" alt="QR Code">
-        </div>
     </main>
 
+    <!-- Fallback de código QR si AR no está disponible o el usuario está en Desktop -->
+    <div id="qr-fallback" class="glass-panel" style="display: none;">
+        <h3>Escanea para AR</h3>
+        <p>Abre esta página en tu celular para usar la cámara.</p>
+        <img id="qr-code-img" src="" alt="QR Code">
+    </div>
+
     <footer class="controls-container glass-panel">
-        <h2 class="section-title">Catálogo de Modelos</h2>
+        <div class="footer-header">
+            <h2 class="section-title" style="margin: 0;">Catálogo</h2>
+            <button id="btn-expand-catalogue">Expandir</button>
+        </div>
+
+        <nav class="category-nav" id="category-nav">
+            <!-- Se llenará dinámicamente con JS -->
+        </nav>
+
         <div class="carousel-container">
             <div class="models-carousel" id="models-carousel">
                 <!-- Se llenará dinámicamente con JS -->
